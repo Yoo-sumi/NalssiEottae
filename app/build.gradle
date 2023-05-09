@@ -5,6 +5,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 android {
     namespace 'com.example.nalssieottae'
     compileSdk 33
@@ -20,6 +23,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "WEATHER_API_KEY", "" + localProperties['WEATHER_API_KEY'] + "")
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -47,6 +53,10 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.44"
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     kapt "com.google.dagger:hilt-compiler:2.44"
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    // Converter ( JSON 타입 결과를 객체로 매핑 )
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'

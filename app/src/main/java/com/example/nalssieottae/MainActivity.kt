@@ -5,17 +5,22 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.example.nalssieottae.databinding.ActivityMainBinding
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    // 뷰모델 생성
+    private val viewModel by viewModels<WeatherViewModel>()
     private lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +57,14 @@ class MainActivity : AppCompatActivity() {
         locationPermissionRequest.launch(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION))
+
+
+        viewModel.weatherResponse.observe(this) {
+            // 날씨 정보 가져옴
+            it.body()?.list?.forEach { body ->
+                Log.d("getWeatherTest", getDate(body.dt))
+            }
+        }
     }
 
     private fun getCurrentLocation(): Boolean {
@@ -73,9 +86,18 @@ class MainActivity : AppCompatActivity() {
                 // Got last known location. In some rare situations this can be null.
                 Log.d("getWeatherTest", "${location.latitude}") // 위도: 37.4835657
                 Log.d("getWeatherTest", "${location.longitude}") // 경도: 127.0190708
-                // 위치 얻었고 이걸로 날씨
+
+                viewModel.getWeather(location.latitude, location.longitude)
             }
         return true
     }
 
+    private fun getDate(timestamp: Long) :String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREAN)
+        val tz = TimeZone.getTimeZone("Asia/Seoul")  // TimeZone에 표준시 설정
+        dateFormat.timeZone = tz                 //DateFormat에 TimeZone 설정
+
+        val date = Date(timestamp * 1000)   // 현재 날짜가 담긴 Date 객체 생성
+        return dateFormat.format(date)
+    }
 }
