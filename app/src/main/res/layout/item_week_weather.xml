@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <variable
+            name="weatherItem"
+            type="com.example.nalssieottae.WeatherItem" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -11,20 +17,20 @@
             android:id="@+id/textView_item_week_weather_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="월"
-            app:layout_constraintBottom_toTopOf="@+id/textView4"
-            app:layout_constraintEnd_toEndOf="@+id/textView4"
+            android:text="@{weatherItem.week}"
+            app:layout_constraintBottom_toTopOf="@+id/textView_item_week_weather_date"
+            app:layout_constraintEnd_toEndOf="@+id/textView_item_week_weather_date"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@+id/textView4"
+            app:layout_constraintStart_toStartOf="@+id/textView_item_week_weather_date"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/textView_item_week_weather_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="@{weatherItem.date}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView_item_week_weather_day"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,19 +39,19 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="16dp"
+            android:layout_height="26dp"
+            app:imageFromUrl="@{weatherItem.img}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/ic_cloud" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView_item_week_weather_low"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-1"
+            android:text="@{@string/degree_celsius(weatherItem.minTemp)}"
             android:layout_marginEnd="10dp"
             app:layout_constraintHorizontal_bias="1"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -57,7 +63,7 @@
             android:id="@+id/textView_item_week_weather_high"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-1"
+            android:text="@{@string/degree_celsius(weatherItem.maxTemp)}"
             app:layout_constraintHorizontal_bias="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

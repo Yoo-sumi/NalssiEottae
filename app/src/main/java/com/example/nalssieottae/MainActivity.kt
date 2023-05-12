@@ -11,10 +11,10 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.example.nalssieottae.databinding.ActivityMainBinding
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     // 뷰모델 생성
     private val viewModel by viewModels<WeatherViewModel>()
     private lateinit var binding : ActivityMainBinding
+    private val weekWeatherList = mutableListOf<WeatherItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +63,23 @@ class MainActivity : AppCompatActivity() {
         viewModel.weatherResponse.observe(this) {
             // 날씨 정보 가져옴
             it.body()?.list?.forEach { body ->
-                Log.d("getWeatherTest", getDate(body.dt))
+                val date = getDate(body.dt)
+                val spilt = date.split(" ")
+                Log.d("getWeatherTest", date)
+                Log.d("getWeatherTest", spilt.toString())
             }
+        }
+
+        viewModel.weeklyWeather.observe(this) {
+            // 날씨 정보 가져옴
+            viewModel.dateList.forEach { i ->
+                val date = i.split("-")
+                Log.d("getWeatherTest", "${date[1]}.${date[2]}")
+                Log.d("getWeatherTest", "${it[date[2].toInt()]?.weather?.get(0)?.icon}")
+                val icon = it[date[2].toInt()]?.weather?.get(0)?.icon
+                weekWeatherList.add(WeatherItem(doDayOfWeek(it[date[2].toInt()]?.dt), "${date[1]}.${date[2]}", "https://openweathermap.org/img/wn/${icon}@2x.png", viewModel.weeklyTempMin[date[2].toInt()].toInt().toString(), viewModel.weeklyTempMax[date[2].toInt()].toInt().toString()))
+            }
+            binding.recyclerViewMainWeekWeather.adapter = WeekWeatherListAdapter(weekWeatherList)
         }
     }
 
@@ -81,14 +97,29 @@ class MainActivity : AppCompatActivity() {
 
             return false
         }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
-                // Got last known location. In some rare situations this can be null.
-                Log.d("getWeatherTest", "${location.latitude}") // 위도: 37.4835657
-                Log.d("getWeatherTest", "${location.longitude}") // 경도: 127.0190708
 
-                viewModel.getWeather(location.latitude, location.longitude)
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener {
+                if (it == null) {
+                    Log.d("getWeatherTest", "Cannot get location")
+                }
+                else {
+                    val lat = it.latitude
+                    val lon = it.longitude
+                    Log.d("getWeatherTest", "${lat}     ${lon}") // 위도: 37.4835657
+                    viewModel.getWeather(it.latitude, it.longitude)
+                }
             }
+        // 맨 마지막 위치가 없을경우 오류가 발생함
+        // https://tristan91.tistory.com/136
+//        fusedLocationClient.lastLocation
+//            .addOnSuccessListener { location ->
+//                // Got last known location. In some rare situations this can be null.
+//                Log.d("getWeatherTest", "${location.latitude}") // 위도: 37.4835657
+//                Log.d("getWeatherTest", "${location.longitude}") // 경도: 127.0190708
+////
+////                viewModel.getWeather(location.latitude, location.longitude)
+//            }
         return true
     }
 
@@ -96,8 +127,32 @@ class MainActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREAN)
         val tz = TimeZone.getTimeZone("Asia/Seoul")  // TimeZone에 표준시 설정
         dateFormat.timeZone = tz                 //DateFormat에 TimeZone 설정
-
         val date = Date(timestamp * 1000)   // 현재 날짜가 담긴 Date 객체 생성
         return dateFormat.format(date)
+    }
+
+    private fun doDayOfWeek(timestamp: Long?): String {
+        val cal = Calendar.getInstance()
+        timestamp ?: return ""
+        cal.time = Date(timestamp * 1000)
+        var strWeek = ""
+        val nWeek = cal.get(Calendar.DAY_OF_WEEK)
+
+        if (nWeek == 1) {
+            strWeek = "일"
+        } else if (nWeek == 2) {
+            strWeek = "월"
+        } else if (nWeek == 3) {
+            strWeek = "화"
+        } else if (nWeek == 4) {
+            strWeek = "수"
+        } else if (nWeek == 5) {
+            strWeek = "목"
+        } else if (nWeek == 6) {
+            strWeek = "금"
+        } else if (nWeek == 7) {
+            strWeek = "토"
+        }
+        return strWeek
     }
 }
