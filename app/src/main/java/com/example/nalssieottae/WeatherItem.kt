@@ -1,7 +1,9 @@
 package com.example.nalssieottae
 
 data class WeatherItem(
-    val time: String,
-    val img: Int,
-    val temp: String
+    val week: String,
+    val date: String,
+    val img: String,
+    val minTemp: String,
+    val maxTemp: String
 )

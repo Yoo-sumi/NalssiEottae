@@ -31,7 +31,7 @@ class WeekWeatherListAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(weatherItem: WeatherItem) {
-
+            binding.weatherItem = weatherItem
         }
     }
 }
