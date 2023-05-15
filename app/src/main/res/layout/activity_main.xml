@@ -113,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:background="#FEF7F7"
+                android:background="#4FFF8CB3"
                 android:padding="8dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -151,7 +151,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:background="#FEF7F7"
+                android:background="#4FFF8CB3"
                 android:padding="8dp"
                 android:layout_marginTop="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -162,7 +162,7 @@
 
                 <TextView
                     android:id="@+id/textView_main_week_weather_title"
-                    android:text="주간 날씨"
+                    android:text="+5일간 날씨"
                     android:textColor="@color/black"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

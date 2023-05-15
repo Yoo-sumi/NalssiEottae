@@ -21,7 +21,7 @@ class WeatherViewModel @Inject constructor(
 
     private val _weatherResponse : MutableLiveData<Response<WeeklyWeather>> = MutableLiveData()
     val weatherResponse get() = _weatherResponse
-    private val _weeklyWeather : MutableLiveData<HashMap<Int, WeeklyWeather.Body>> = MutableLiveData()
+    private val _weeklyWeather : MutableLiveData<HashMap<Int, MutableList<WeeklyWeather.Body>>> = MutableLiveData()
     val weeklyWeather get() = _weeklyWeather
 //    val weeklyTempMin = HashMap<Int, MutableList<Double>>()
 //    val weeklyTempMax = HashMap<Int, MutableList<Double>>()
@@ -33,15 +33,22 @@ class WeatherViewModel @Inject constructor(
         viewModelScope.launch {
             val response = repository.getWeather(lat.toString(), lon.toString())
 //            _weatherResponse.value = response
-            val temp = HashMap<Int, WeeklyWeather.Body>()
+            val temp = HashMap<Int, MutableList<WeeklyWeather.Body>>()
             Log.d("getWeatherTest", "${response.body()?.list?.size}") // 위도: 37.4835657
 
             response.body()?.list?.forEach { weather ->
                 val date = getDate(weather.dt)
                 val index = date.split(" ")[0]
-                dateList.add(date.split(" ")[0])
+                dateList.add(index)
                 val indexToInt = index.split("-")[2].toInt()
-                temp[indexToInt] = weather
+                Log.d("getWeatherTest2", "${date}")
+                Log.d("getWeatherTest2", "${indexToInt} ${date} ${weather.main.temp}")
+
+                if (temp[indexToInt] == null) {
+                    temp[indexToInt] = mutableListOf(weather)
+                } else {
+                    temp[indexToInt]?.add(weather)
+                }
                 weeklyTempMax[indexToInt] = max(weeklyTempMax[indexToInt], getCelsius(weather.main.temp_max))
                 weeklyTempMin[indexToInt] = min(weeklyTempMin[indexToInt], getCelsius(weather.main.temp_min))
 //                if (weeklyTempMax[index].isNullOrEmpty()) {
@@ -66,7 +73,7 @@ class WeatherViewModel @Inject constructor(
         return dateFormat.format(date)
     }
 
-    private fun getCelsius(kelvin: Double): Double {
+    fun getCelsius(kelvin: Double): Double {
         return kelvin - 273.15
     }
 }

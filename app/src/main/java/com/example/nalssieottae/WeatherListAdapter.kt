@@ -20,7 +20,7 @@ class WeatherListAdapter(
         return WeatherViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = weatherList.size
+    override fun getItemCount(): Int = 8
 
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
         holder.bind(weatherList[position])
@@ -30,7 +30,7 @@ class WeatherListAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(weatherItem: WeatherItem) {
-
+            binding.weatherItem = weatherItem
         }
     }
 }
