@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -132,6 +133,7 @@ class MainActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREAN)
         val tz = TimeZone.getTimeZone("Asia/Seoul")  // TimeZone에 표준시 설정
         dateFormat.timeZone = tz                 //DateFormat에 TimeZone 설정
+
         val date = Date(timestamp * 1000)   // 현재 날짜가 담긴 Date 객체 생성
         return dateFormat.format(date)
     }
